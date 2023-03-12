@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+
+    downloader:
+        container_name: downloader
+        build: .
+        command: /app/downloader.sh
+        environment:
+            - DOWNLOADER_PLAYLIST_URLS=
+                https://www.youtube.com/playlist?list=PLkn3MTTM6tPDuqBWaUjH9tiOWwP4m6ich
+        volumes:
+            - "./data-local:/media/downloader"
