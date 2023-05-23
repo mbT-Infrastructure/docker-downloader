@@ -1,12 +1,12 @@
 FROM madebytimo/cron
 
 COPY apt-sources.list /etc/apt/sources.list
-RUN install-autonomous.sh install Java Scripts && \
-    apt update && apt install -y -qq rename yt-dlp && \ 
+RUN install-autonomous.sh install Fileorganizer Java Scripts && \
+    apt update && apt install -y -qq rename yt-dlp && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY downloader.sh Fileorganizer.jar .
+COPY downloader.sh .
 
 RUN mv /entrypoint.sh /entrypoint-cron.sh
 COPY entrypoint.sh /entrypoint.sh
