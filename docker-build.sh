@@ -11,7 +11,7 @@ VERSION=""
 for ARGUMENT in "$@"; do
     if [ "$ARGUMENT" == "-h" ] || [ "$ARGUMENT" == "--help" ]; then
         echo "usage: $(basename "$0") [ARGUMENT]"
-        echo "Builds the docker image from the Dockerfile." 
+        echo "Builds the docker image from the Dockerfile."
         echo "ARGUMENT can be"
         echo "--push push the build"
         echo "--update-base only build if newer base image available."
@@ -20,9 +20,9 @@ for ARGUMENT in "$@"; do
 done
 
 # check dependencies
-for cmd in ${DEPENDENCIES[@]}; do
-    if [[ -z "$(command -v $cmd)" ]]; then
-        echo "$cmd is missing!"
+for CMD in "${DEPENDENCIES[@]}"; do
+    if [[ -z "$(which "$CMD")" ]]; then
+        echo "\"${CMD}\" is missing!"
         exit 1
     fi
 done
