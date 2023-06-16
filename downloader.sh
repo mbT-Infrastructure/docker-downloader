@@ -28,7 +28,7 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
             -E 's/^.* - (.*) - /$1 - /' \
             -E 's/ [x&] /, /gi' \
             -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
-            -E 's/\[(.*)\]/\($1\)' \
+            -E 's/\[(.*)\]/\($1\)/g' \
             -E 's/ *\(((Official|Offizielles) )?((Music|Musik) ?)?(Audio|Lyrics|Video|Videoclip|Tiktok.*)\)//gi' \
             -E 's/ *[\|｜].*(Audio|Lyrics|Video|4k|Tiktok).*(\.\w*)/$3/gi' \
             -E 's/[\|｜]\s*(\w.*)(\.\w*)/\($1\)$2/' \
