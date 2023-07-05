@@ -24,7 +24,8 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
         echo "Downloaded new file \"$(ls -A "$WORKDIR")\""
         touch --no-create "$WORKDIR"/*
 
-        rename --filename -E 's/\s/ /g' \
+        rename --filename --unicode UTF-8 \
+            -E 's/\s/ /g' \
             -E 's/^.* - (.*) - /$1 - /' \
             -E 's/ [x&] /, /gi' \
             -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
