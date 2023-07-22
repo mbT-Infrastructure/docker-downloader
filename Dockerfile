@@ -1,7 +1,7 @@
 FROM madebytimo/cron
 
 COPY apt-sources.list /etc/apt/sources.list
-RUN install-autonomous.sh install Fileorganizer Java && \
+RUN install-autonomous.sh install Fileorganizer Java Scripts && \
     apt update && apt install -y -qq rename yt-dlp && \
     rm -rf /var/lib/apt/lists/*
 

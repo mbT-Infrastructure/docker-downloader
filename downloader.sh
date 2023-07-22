@@ -24,20 +24,8 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
         echo "Downloaded new file \"$(ls -A "$WORKDIR")\""
         touch --no-create "$WORKDIR"/*
 
+        normalize-filename.sh "$WORKDIR"/*
         rename --filename --unicode UTF-8 \
-            -E 's/\s/ /g' \
-            -E 's/  / /g' \
-            -E 's/ [x&] /, /gi' \
-            -E 's/¡/i/gi' \
-            -E 's/@/ at /gi' \
-            -E 's/á/a/gi' \
-            -E 's/é/e/gi' \
-            -E 's/í/i/gi' \
-            -E 's/ń/n/gi' \
-            -E 's/ñ/n/gi' \
-            -E 's/ó/o/gi' \
-            -E 's/ø/ö/gi' \
-            -E 's/[^a-zäöüß0-9 +\-\(\)\.,]//gi' \
             -E 's/^.* - (.*) - /$1 - /' \
             -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
             -E 's/\[(.*)\]/\($1\)/g' \
