@@ -11,7 +11,9 @@ echo "Start downloader"
 for URL in $DOWNLOADER_PLAYLIST_URLS; do
     echo "Download from \"${URL}\""
     while true; do
-        yt-dlp --extract-audio --audio-format "opus" --embed-thumbnail \
+        yt-dlp --extract-audio --audio-format "opus" --embed-thumbnail --embed-thumbnail \
+            --convert-thumb png --postprocessor-args \
+            "ThumbnailsConvertor+ffmpeg_o:-c:v png -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
             --download-archive "${CONFIG_DIR}/downloaded.txt" --max-downloads 1 \
             --output "$WORKDIR/%(creator).80s - %(title)s.%(ext)s" --trim-filenames "124" \
             --quiet "$URL" \
