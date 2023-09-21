@@ -13,6 +13,7 @@ COPY entrypoint.sh /entrypoint.sh
 
 ENV DOWNLOADER_CRON="30 20 * * *"
 ENV DOWNLOADER_PLAYLIST_URLS=""
+ENV POST_EXECUTION_COMMAND=""
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "sleep", "infinity" ]

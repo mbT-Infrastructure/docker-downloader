@@ -9,5 +9,6 @@ services:
         environment:
             - DOWNLOADER_PLAYLIST_URLS=
                 https://www.youtube.com/playlist?list=PLkn3MTTM6tPDuqBWaUjH9tiOWwP4m6ich
+            - POST_EXECUTION_COMMAND=echo "Here is post execution command."
         volumes:
             - "./data-local:/media/downloader"

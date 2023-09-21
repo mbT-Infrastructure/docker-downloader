@@ -11,6 +11,8 @@ It downloads all new files from the given playlists at the given cron schedule.
     - The time to run the downloader. The default is `30 20 * * *`
 - `DOWNLOADER_PLAYLIST_URLS`
     - Urls of the playlists. One per line. No spaces in url allowed.
+- `POST_EXECUTION_COMMAND`
+    - Command to run when the downloads are finished.
 
 
 ## Volumes

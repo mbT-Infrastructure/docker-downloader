@@ -46,3 +46,7 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
         fi
     done
 done
+
+if [[ -n "$POST_EXECUTION_COMMAND" ]]; then
+    eval "$POST_EXECUTION_COMMAND"
+fi
