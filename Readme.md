@@ -12,7 +12,7 @@ It downloads all new files from the given playlists at the given cron schedule.
 - `DOWNLOADER_PLAYLIST_URLS`
     - Urls of the playlists. One per line. No spaces in url allowed.
 - `POST_EXECUTION_COMMAND`
-    - Command to run when the downloads are finished.
+    - Command to run when the downloads are finished and new files are downloaded.
 
 
 ## Volumes

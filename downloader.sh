@@ -3,6 +3,7 @@ set -e
 
 CONFIG_DIR="/media/downloader/config"
 FAIL_DIR="/media/downloader/fail"
+NEW_DOWNLOAD=false
 OUTPUT_DIR="/media/downloader/output"
 WORKDIR="/media/workdir"
 
@@ -24,6 +25,7 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
         fi
 
         echo "Downloaded new file \"$(ls -A "$WORKDIR")\""
+        NEW_DOWNLOAD=true
         touch --no-create "$WORKDIR"/*
 
         normalize-filename.sh "$WORKDIR"/*
@@ -47,6 +49,6 @@ for URL in $DOWNLOADER_PLAYLIST_URLS; do
     done
 done
 
-if [[ -n "$POST_EXECUTION_COMMAND" ]]; then
+if [[ "$NEW_DOWNLOAD" == true ]] && [[ -n "$POST_EXECUTION_COMMAND" ]]; then
     eval "$POST_EXECUTION_COMMAND"
 fi
