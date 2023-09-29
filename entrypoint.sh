@@ -1,13 +1,24 @@
 #!/usr/bin/env bash
 set -e
 
-mkdir --parents /media/downloader/config
+DOWNLOAD_TYPES=(movie music musicvideo series)
+
 mkdir --parents /media/downloader/fail
-mkdir --parents /media/downloader/output
 mkdir --parents /media/workdir
 
-echo "$DOWNLOADER_CRON root DOWNLOADER_PLAYLIST_URLS=\"${DOWNLOADER_PLAYLIST_URLS}\"" \
+for DOWNLOAD_TYPE in "${DOWNLOAD_TYPES[@]}"; do
+    mkdir --parents "/media/downloader/output/$DOWNLOAD_TYPE"
+    mkdir --parents "/media/downloader/config/$DOWNLOAD_TYPE"
+done
+
+echo "$DOWNLOADER_CRON root DOWNLOADER_LIST=\"${DOWNLOADER_LIST}\"" \
+    "POST_EXECUTION_COMMAND=\"${POST_EXECUTION_COMMAND}\"" \
     "bash --login -c '/app/downloader.sh > /proc/1/fd/1 2>&1'" > \
     /media/cron/downloader
+
+if [[ ! -e /media/downloader/downloader-list.txt ]]; then
+    echo "# [[movie|music|musicvideo|series]] URL ((NOTE))" \
+    > /media/downloader/downloader-list.txt
+fi
 
 exec /entrypoint-cron.sh "$@"

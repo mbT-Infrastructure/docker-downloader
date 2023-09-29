@@ -7,8 +7,13 @@ services:
         build: .
         command: /app/downloader.sh
         environment:
-            - DOWNLOADER_PLAYLIST_URLS=
-                https://www.youtube.com/playlist?list=PLkn3MTTM6tPDuqBWaUjH9tiOWwP4m6ich
+            - |
+                DOWNLOADER_LIST=
+                movie https://www.youtube.com/watch?v=HJpDlGvY6YE My Note
+                music https://www.youtube.com/watch?v=HJpDlGvY6YE
+                musicvideo https://www.youtube.com/watch?v=HJpDlGvY6YE
+                series https://www.youtube.com/watch?v=HJpDlGvY6YE
+                xyz https://www.youtube.com/watch?v=HJpDlGvY6YE
             - POST_EXECUTION_COMMAND=echo "Here is post execution command."
         volumes:
             - "./data-local:/media/downloader"

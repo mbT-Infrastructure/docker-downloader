@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 set -e
 
-BUILD_ARGUMENTS=""
+BUILD_ARGUMENTS=()
 DEPENDENCIES=(docker)
 UPDATE_BASE=false
+REGISTRY_USER="madebytimo"
 REPOSIITORY_NAME="docker-downloader"
-VERSION=""
 
 # help message
 for ARGUMENT in "$@"; do
@@ -13,8 +13,9 @@ for ARGUMENT in "$@"; do
         echo "usage: $(basename "$0") [ARGUMENT]"
         echo "Builds the docker image from the Dockerfile."
         echo "ARGUMENT can be"
+        echo "--platform [amd64|arm64|arm] build only specified platform"
         echo "--push push the build"
-        echo "--update-base only build if newer base image available."
+        echo "--update-base only build if newer base image available"
         exit
     fi
 done
@@ -29,10 +30,13 @@ done
 
 # check arguments
 while [[ -n "$1" ]]; do
-    if [[ "$1" = "--update-base" ]]; then
+    if [[ "$1" = "--platform" ]]; then
+        shift
+        BUILD_ARGUMENTS+=("--set" "default.platform=$1")
+    elif [[ "$1" = "--update-base" ]]; then
         UPDATE_BASE=true
     elif [[ "$1" = "--push" ]]; then
-        BUILD_ARGUMENTS+=" --push"
+        BUILD_ARGUMENTS+=("--push")
     else
         echo "Unknown argument: \"$1\""
         exit 1
@@ -44,7 +48,7 @@ BASE_IMAGE="$(tac Dockerfile | grep --max-count=1 "FROM" | cut -d" " -f2)"
 docker pull "$BASE_IMAGE"
 BASE_IMAGE_DATE="$(docker image inspect --format="{{ .Created }}" "$BASE_IMAGE" | cut -d "T" -f1)"
 echo "Base image is $BASE_IMAGE from $BASE_IMAGE_DATE"
-IMAGE="madebytimo/${REPOSIITORY_NAME#docker-}"
+IMAGE="${REGISTRY_USER}/${REPOSIITORY_NAME#docker-}"
 if [[ "$UPDATE_BASE" == true ]]; then
     docker pull "$IMAGE"
     PUSHED_IMAGE_DATE="$(docker image inspect --format="{{ .Created }}" "$IMAGE" | cut -d "T" -f1)"
@@ -57,4 +61,4 @@ fi
 VERSION="$(cat Version.txt)"
 
 export BASE_IMAGE BASE_IMAGE_DATE IMAGE VERSION
-docker buildx bake --file docker-bake.hcl $BUILD_ARGUMENTS
+docker buildx bake --file docker-bake.hcl "${BUILD_ARGUMENTS[@]}"
