@@ -52,7 +52,7 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
         RUN_FILENAME_SANITIZE=true
     elif [[ "$TYPE" == series ]]; then
-        YT_DLP_ARGUMENTS=(--output \ "${WORKDIR}/%(series,playlist_title)s S%(season_number\
+        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(series,playlist_title)s S%(season_number\
 |XX)02dE%(episode_number|XX)02d%(title& |)s%(title|)s (%(release_date>%Y,upload_date>%Y)s) [%(\
 language).2s].%(ext)s")
     else
