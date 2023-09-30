@@ -17,9 +17,10 @@ touch "$LOCK_FILE"
 
 echo "Start downloader"
 
-mapfile -t DOWNLOADER_ITEMS_FILE <"/media/downloader/downloader-list.txt"
-mapfile -t DOWNLOADER_ITEMS_VARIABLE <<<"$DOWNLOADER_LIST"
-DOWNLOADER_ITEMS=("${DOWNLOADER_ITEMS_VARIABLE[@]}" "${DOWNLOADER_ITEMS_FILE[@]}")
+mapfile -t DOWNLOADER_ITEMS_FILE </media/downloader/downloader-list.txt
+mapfile -t DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE \
+    </media/downloader/downloader-list-from-environment-variable.txt
+DOWNLOADER_ITEMS=("${DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE[@]}" "${DOWNLOADER_ITEMS_FILE[@]}")
 
 for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     ITEM="${ITEM##*([[:space:]])}"

@@ -14,6 +14,7 @@ services:
                 musicvideo https://www.youtube.com/watch?v=HJpDlGvY6YE
                 series https://www.youtube.com/watch?v=HJpDlGvY6YE
                 xyz https://www.youtube.com/watch?v=HJpDlGvY6YE
-            - POST_EXECUTION_COMMAND=echo "Here is post execution command."
+            - POST_EXECUTION_COMMAND=echo 'Here is post execution command.'
+            # - DOWNLOADER_CRON=* * * * *
         volumes:
             - "./data-local:/media/downloader"
