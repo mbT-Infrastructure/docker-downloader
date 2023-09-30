@@ -15,7 +15,7 @@ echo "$DOWNLOADER_LIST" > /media/downloader/downloader-list-from-environment-var
 chmod a-w /media/downloader/downloader-list-from-environment-variable.txt
 
 echo "$DOWNLOADER_CRON root POST_EXECUTION_COMMAND=\"${POST_EXECUTION_COMMAND}\"" \
-    "bash -c '/app/downloader.sh > /proc/1/fd/1 2>&1'" > \
+    "bash --login -c '/app/downloader.sh > /proc/1/fd/1 2>&1'" > \
     /media/cron/downloader
 
 if [[ ! -e /media/downloader/downloader-list.txt ]]; then

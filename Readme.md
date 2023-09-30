@@ -23,7 +23,7 @@ It downloads all new files from the given urls at the given cron schedule.
 - `/media/downloader/config`
     - The config directory, where downloaded id's are saved.
 - `/media/downloader/fail`
-    - The output directory, if a file with the same name is alraedy in the output directory.
+    - The output directory, if a file with the same name is already in the output directory.
 - `/media/downloader/output`
     - The output directory.
 - `/media/workdir`
