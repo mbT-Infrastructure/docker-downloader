@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-DOWNLOAD_TYPES=(movie music musicvideo series)
+DOWNLOAD_TYPES=(movie music musicvideo news series)
 
 mkdir --parents /media/downloader/fail
 mkdir --parents /media/workdir
@@ -20,7 +20,8 @@ echo "$DOWNLOADER_CRON root POST_EXECUTION_COMMAND=\"${POST_EXECUTION_COMMAND}\"
     /media/cron/downloader
 
 if [[ ! -e /media/downloader/downloader-list.txt ]]; then
-    echo "# [[movie|music|musicvideo|series]] URL ((NOTE))" \
+    DOWNLOAD_TYPES_STRING="${DOWNLOAD_TYPES[*]}"
+    echo "# [[${DOWNLOAD_TYPES_STRING// /|}]] URL ((NOTE))" \
     > /media/downloader/downloader-list.txt
 fi
 

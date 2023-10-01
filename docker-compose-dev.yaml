@@ -12,6 +12,7 @@ services:
                 movie https://www.youtube.com/watch?v=HJpDlGvY6YE My Note
                 music https://www.youtube.com/watch?v=HJpDlGvY6YE
                 musicvideo https://www.youtube.com/watch?v=HJpDlGvY6YE
+                news https://www.youtube.com/watch?v=HJpDlGvY6YE
                 series https://www.youtube.com/watch?v=HJpDlGvY6YE
                 xyz https://www.youtube.com/watch?v=HJpDlGvY6YE
             - POST_EXECUTION_COMMAND=echo 'Here is post execution command.'
