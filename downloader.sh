@@ -108,8 +108,9 @@ tok.*)\)//gi" \
     done
 done
 
+POST_EXECUTION_COMMAND="$(cat /tmp/post-execution-command)"
 if [[ "$NEW_DOWNLOAD" == true ]] && [[ -n "$POST_EXECUTION_COMMAND" ]]; then
-    eval "$(cat /tmp/post-execution-command)"
+    eval "$POST_EXECUTION_COMMAND"
 fi
 
 # Release lock
