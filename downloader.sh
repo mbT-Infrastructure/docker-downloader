@@ -3,7 +3,7 @@ set -e
 
 CONFIG_DIR="/media/downloader/config"
 FAIL_DIR="/media/downloader/fail"
-LOCK_FILE="/tmp/$(basename "$0").lock"
+LOCK_FILE="/run/lock/$(basename "$0").lock"
 NEW_DOWNLOAD=false
 OUTPUT_DIR="/media/downloader/output"
 WORKDIR="/media/workdir"

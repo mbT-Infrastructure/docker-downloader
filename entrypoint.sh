@@ -10,7 +10,7 @@ for DOWNLOAD_TYPE in "${DOWNLOAD_TYPES[@]}"; do
     mkdir --parents "/media/downloader/config/$DOWNLOAD_TYPE"
 done
 
-rm -f /tmp/downloader.sh.lock
+rm -f /run/lock/downloader.sh.lock
 
 echo "$DOWNLOADER_LIST" > /media/downloader/downloader-list-from-environment-variable.txt
 chmod a-w /media/downloader/downloader-list-from-environment-variable.txt
