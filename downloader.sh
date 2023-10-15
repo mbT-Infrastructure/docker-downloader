@@ -54,9 +54,9 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
 %(playlist_title,channel,title)s \\[%(language).2s\\].%(ext)s")
     elif [[ "$TYPE" == series ]]; then
-        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(series,playlist_title)s S%(season_number\
-|XX)02dE%(episode_number,playlist_index|XX)02d%(title& |)s%(title|)s (%(release_date>%Y,upload_date>%Y)s) [%(\
-language).2s].%(ext)s")
+        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(series,playlist_title)s S%(season_number|XX)02dE\
+%(episode_number,playlist_index|XX)02d%(title& |)s%(title|)s (%(release_date>%Y,upload_date>%Y)s) [\
+%(language).2s].%(ext)s")
     else
         echo "Type \"${TYPE}\" not supported."
         continue

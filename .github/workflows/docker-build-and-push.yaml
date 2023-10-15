@@ -10,14 +10,16 @@ on:
 jobs:
     docker-build-and-push:
         runs-on: ubuntu-latest
-        steps: 
+        steps:
             - name: add builder
-              run: docker run --privileged --rm tonistiigi/binfmt --install all && docker buildx create --use
+              run: |
+                  docker run --privileged --rm tonistiigi/binfmt --install all \
+                  && docker buildx create --use
             - name: checkout repository
               uses: actions/checkout@v3
             - name: login into repository
-              run: echo ${{ secrets.DOCKER_REGISTRY_PASSWORD }} | 
-                docker login --username ${{ secrets.DOCKER_REGISTRY_USERNAME }} 
+              run: echo ${{ secrets.DOCKER_REGISTRY_PASSWORD }} |
+                docker login --username ${{ secrets.DOCKER_REGISTRY_USERNAME }}
                 --password-stdin ${{ secrets.DOCKER_REGISTRY_URL }}
             - name: build and push
               run: ./docker-build.sh --push
