@@ -44,8 +44,8 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         RUN_FILENAME_SANITIZE=true
         RUN_FILEORGANIZER=true
         YT_DLP_ARGUMENTS=(--extract-audio --audio-format "opus" \
-        --convert-thumb png --postprocessor-args "ThumbnailsConvertor+ffmpeg_o:-c:v \
-        png -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
+        --postprocessor-args "ThumbnailsConvertor+ffmpeg_o:-c:v \
+        mjpeg -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
         --output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
     elif [[ "$TYPE" == musicvideo ]]; then
         YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
@@ -65,7 +65,8 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     echo "Download ${TYPE} from \"${URL}\""
     while true; do
         yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-unavailable-fragments --audio-multistream \
-            --concurrent-fragments 8 --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
+            --concurrent-fragments 8 --convert-thumb jpg \
+            --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
             --format-sort res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264 --max-downloads 1 \
             --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL"  \
