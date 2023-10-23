@@ -70,7 +70,7 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
             --format-sort res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264 --max-downloads 1 \
             --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL"  \
-            || true
+            || rm -f ./*
         if [[ ! "$(ls -A "$WORKDIR")" ]]; then
             echo "No new download"
             break
