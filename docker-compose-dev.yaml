@@ -5,7 +5,7 @@ services:
     downloader:
         container_name: downloader
         build: .
-        command: /app/downloader.sh
+        command: downloader.sh
         environment:
             - |
                 DOWNLOADER_LIST=

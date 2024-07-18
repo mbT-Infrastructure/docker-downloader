@@ -64,13 +64,17 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
 
     echo "Download ${TYPE} from \"${URL}\""
     while true; do
+        EXIT_CODE=0
         yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-unavailable-fragments --audio-multistream \
             --concurrent-fragments 8 --convert-thumb jpg \
             --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
             --format-sort res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264 --max-downloads 1 \
-            --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL"  \
-            || rm -f ./*
+            --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL" || EXIT_CODE=$?
+        if [[ "$EXIT_CODE" != @(101|0) ]]; then
+            echo "Download failed with exit code ${EXIT_CODE}."
+            rm -f "$WORKDIR"/*
+        fi
         if [[ ! "$(ls -A "$WORKDIR")" ]]; then
             echo "No new download"
             break

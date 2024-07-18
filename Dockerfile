@@ -3,11 +3,10 @@ FROM madebytimo/cron
 RUN install-autonomous.sh install Basics FFmpeg Fileorganizer Java Python Scripts YtDlp \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY downloader.sh .
+COPY files/downloader.sh /usr/local/bin/downloader.sh
 
 RUN mv /entrypoint.sh /entrypoint-cron.sh
-COPY entrypoint.sh /entrypoint.sh
+COPY files/entrypoint.sh /entrypoint.sh
 
 ENV DOWNLOADER_CRON="30 20 * * *"
 ENV DOWNLOADER_LIST=""
