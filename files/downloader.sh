@@ -87,7 +87,7 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         normalize-filename.sh "$WORKDIR"/*
 
         if [[ "$RUN_FILENAME_SANITIZE" == true ]]; then
-        rename --filename --unicode UTF-8 \
+        rename --filename \
             -E 's/^.* - (.*) - /$1 - /' \
             -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
             -E 's/\[(.*)\]/\($1\)/g' \
@@ -101,7 +101,7 @@ tok.*)\)//gi" \
         fi
 
         if [[ -n "$NOTE" ]]; then
-            rename --filename --unicode UTF-8 "s/^/${NOTE} - /" "$WORKDIR"/*
+            rename --filename "s/^/${NOTE} - /" "$WORKDIR"/*
         fi
 
         echo "Move file \"$(ls -A "$WORKDIR")\""
