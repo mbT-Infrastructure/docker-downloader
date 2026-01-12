@@ -6,6 +6,7 @@ services:
         container_name: downloader
         build: .
         command: downloader.sh
+        mem_limit: 300M
         environment:
             - |
                 DOWNLOADER_LIST=
@@ -17,5 +18,7 @@ services:
                 xyz https://www.youtube.com/watch?v=HJpDlGvY6YE
             - POST_EXECUTION_COMMAND=echo 'Here is post execution command.'
             # - DOWNLOADER_CRON=* * * * *
+        tmpfs:
+            - /media/workdir
         volumes:
             - "./data-local:/media/downloader"

@@ -22,6 +22,11 @@ mapfile -t DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE \
     </media/downloader/downloader-list-from-environment-variable.txt
 DOWNLOADER_ITEMS=("${DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE[@]}" "${DOWNLOADER_ITEMS_FILE[@]}")
 
+VIDEO_DEFAULT_ARGUMENTS=(--format "bestvideo[language=?deu]+(bestaudio[language~=?'deu?'],\
+bestaudio[language~=?'deu?'][format_note*=Audiodeskription],bestaudio[language~='eng?'])/best" \
+    --format-sort "res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264" \
+    --remux-video mkv)
+
 for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     ITEM="${ITEM##*([[:space:]])}"
     if [[ -z "$ITEM" ]] || [[ "$ITEM" == "#"* ]]; then
@@ -38,7 +43,7 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     RUN_FILEORGANIZER=false
     YT_DLP_ARGUMENTS=()
     if [[ "$TYPE" == movie ]]; then
-        YT_DLP_ARGUMENTS=(--output \
+        YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
         "${WORKDIR}/%(title)s (%(release_date>%Y,upload_date>%Y)s) [%(language).2s].%(ext)s")
     elif [[ "$TYPE" == music ]]; then
         RUN_FILENAME_SANITIZE=true
@@ -48,13 +53,16 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         mjpeg -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
         --output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
     elif [[ "$TYPE" == musicvideo ]]; then
-        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
+        YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
+        "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
         RUN_FILENAME_SANITIZE=true
     elif [[ "$TYPE" == news ]]; then
-        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
+        YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
+        "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
 %(playlist_title,channel)s - %(title)s \\[%(language).2s\\].%(ext)s")
     elif [[ "$TYPE" == series ]]; then
-        YT_DLP_ARGUMENTS=(--output "${WORKDIR}/%(series,playlist_title)s S%(season_number|XX)02dE\
+        YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
+        "${WORKDIR}/%(series,playlist_title)s S%(season_number|XX)02dE\
 %(episode_number,playlist_index|XX)02d%(title& |)s%(title|)s (%(release_date>%Y,upload_date>%Y)s) [\
 %(language).2s].%(ext)s")
     else
@@ -65,12 +73,13 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     echo "Download ${TYPE} from \"${URL}\""
     while true; do
         EXIT_CODE=0
-        yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-unavailable-fragments --audio-multistream \
-            --concurrent-fragments 8 --convert-thumb jpg \
+        yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-error --abort-on-unavailable-fragments \
+            --audio-multistream --concurrent-fragments 8 --convert-thumb jpg \
             --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
-            --format-sort res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264 --max-downloads 1 \
-            --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL" || EXIT_CODE=$?
+            --fragment-retries 1000 --max-downloads 1 --retries 100 --retry-sleep 10 \
+            --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL" \
+            || EXIT_CODE=$?
         if [[ "$EXIT_CODE" != @(101|0) ]]; then
             echo "Download failed with exit code ${EXIT_CODE}."
             rm -f "$WORKDIR"/*

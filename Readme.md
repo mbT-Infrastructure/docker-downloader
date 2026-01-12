@@ -4,8 +4,14 @@ This Docker image contains a script to automate downloads.
 
 It downloads all new files from the given urls at the given cron schedule.
 
+## Installation
 
-## Environment variables
+1. Pull from [Docker Hub], download the package from [Releases] or build using `builder/build.sh`
+
+
+## Usage
+
+### Environment variables
 
 - `DOWNLOADER_CRON`
     - The time to run the downloader. The default is `30 20 * * *`
@@ -16,7 +22,7 @@ It downloads all new files from the given urls at the given cron schedule.
     - Command to run when the downloads are finished and new files are downloaded.
 
 
-## Volumes
+### Volumes
 
 - `/media/downloader`
     - The config and output directory.
@@ -27,12 +33,16 @@ It downloads all new files from the given urls at the given cron schedule.
 - `/media/downloader/output`
     - The output directory.
 - `/media/workdir`
-    - The directory which is used while downloading.
+    - The working directory which is used while downloading.
 
 
 ## Development
 
-To build the image locally run:
+To build and run the docker container for development execute:
+
 ```bash
-./docker-build.sh
+docker compose --file docker-compose-dev.yaml up --build
 ```
+
+[Docker Hub]: https://hub.docker.com/r/madebytimo/downloader
+[Releases]: https://github.com/mbt-infrastructure/docker-downloader/releases
