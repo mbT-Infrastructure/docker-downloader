@@ -27,7 +27,7 @@ mapfile -t DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE \
     </media/downloader/downloader-list-from-environment-variable.txt
 DOWNLOADER_ITEMS=("${DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE[@]}" "${DOWNLOADER_ITEMS_FILE[@]}")
 
-AUDIO_DEFAULT_ARGUMENTS=(--extract-audio --audio-format "opus" --format "bestaudio/best" \
+AUDIO_DEFAULT_ARGUMENTS=(--extract-audio --format "bestaudio/best" \
     --format-sort "acodec:opus,acodec:mp3,acodec:aac" )
 VIDEO_DEFAULT_ARGUMENTS=(--format "bestvideo[language=?deu]+(bestaudio[language~=?'deu?'],\
 bestaudio[language~=?'deu?'][format_note*=Audiodeskription],bestaudio[language~='eng?'])/best" \
