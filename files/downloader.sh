@@ -1,19 +1,24 @@
 #!/usr/bin/env bash
-set -e
+set -e -o pipefail
 
 CONFIG_DIR="/media/downloader/config"
 FAIL_DIR="/media/downloader/fail"
-LOCK_FILE="/run/lock/$(basename "$0").lock"
+LOCK_FILE="/dev/shm/$(basename "$0").lock"
 NEW_DOWNLOAD=false
 OUTPUT_DIR="/media/downloader/output"
 WORKDIR="/media/workdir"
 
 # Aquire lock
 if [ -e "$LOCK_FILE" ]; then
-    echo "Error: $(basename "$0") is already running. Exiting."
-    exit 1
+    echo "Error: Already running." >&2
+    exit 11
 fi
 touch "$LOCK_FILE"
+
+function cleanup {
+    rm "$LOCK_FILE"
+}
+trap cleanup EXIT
 
 echo "Start downloader"
 
@@ -22,6 +27,8 @@ mapfile -t DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE \
     </media/downloader/downloader-list-from-environment-variable.txt
 DOWNLOADER_ITEMS=("${DOWNLOADER_ITEMS_ENVIRONMENT_VARIABLE[@]}" "${DOWNLOADER_ITEMS_FILE[@]}")
 
+AUDIO_DEFAULT_ARGUMENTS=(--extract-audio --audio-format "opus" --format "bestaudio/best" \
+    --format-sort "acodec:opus,acodec:mp3,acodec:aac" )
 VIDEO_DEFAULT_ARGUMENTS=(--format "bestvideo[language=?deu]+(bestaudio[language~=?'deu?'],\
 bestaudio[language~=?'deu?'][format_note*=Audiodeskription],bestaudio[language~='eng?'])/best" \
     --format-sort "res,vcodec:av01,acodec:opus,vcodec:vp9,vcodec:h264" \
@@ -44,11 +51,12 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     YT_DLP_ARGUMENTS=()
     if [[ "$TYPE" == movie ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(title)s (%(release_date>%Y,upload_date>%Y)s) [%(language).2s].%(ext)s")
+        "${WORKDIR}/%(title)s (%(release_date>%Y,upload_date>%Y)s)\
+%(format_note& - {}|)s [%(language).2s].%(ext)s")
     elif [[ "$TYPE" == music ]]; then
         RUN_FILENAME_SANITIZE=true
         RUN_FILEORGANIZER=true
-        YT_DLP_ARGUMENTS=(--extract-audio --audio-format "opus" \
+        YT_DLP_ARGUMENTS=("${AUDIO_DEFAULT_ARGUMENTS[@]}" \
         --postprocessor-args "ThumbnailsConvertor+ffmpeg_o:-c:v \
         mjpeg -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
         --output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
@@ -60,11 +68,15 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
         "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
 %(playlist_title,channel)s - %(title)s \\[%(language).2s\\].%(ext)s")
+    elif [[ "$TYPE" == podcast ]]; then
+        YT_DLP_ARGUMENTS=("${AUDIO_DEFAULT_ARGUMENTS[@]}" --output \
+        "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
+%(series,playlist_title,channel)s%(title& - {}|)s [%(language).2s].%(ext)s")
     elif [[ "$TYPE" == series ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(series,playlist_title)s S%(season_number|XX)02dE\
-%(episode_number,playlist_index|XX)02d%(title& |)s%(title|)s (%(release_date>%Y,upload_date>%Y)s) [\
-%(language).2s].%(ext)s")
+        "${WORKDIR}/%(series,playlist_title,channel)s S%(season_number|XX)02d\
+E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_date>%Y)s)\
+%(format_note& - {}|)s [%(language).2s].%(ext)s")
     else
         echo "Type \"${TYPE}\" not supported."
         continue
@@ -122,10 +134,7 @@ tok.*)\)//gi" \
     done
 done
 
-POST_EXECUTION_COMMAND="$(cat /tmp/post-execution-command)"
+POST_EXECUTION_COMMAND="$(cat /dev/shm/downloader-post-execution-command)"
 if [[ "$NEW_DOWNLOAD" == true ]] && [[ -n "$POST_EXECUTION_COMMAND" ]]; then
     eval "$POST_EXECUTION_COMMAND"
 fi
-
-# Release lock
-rm "$LOCK_FILE"

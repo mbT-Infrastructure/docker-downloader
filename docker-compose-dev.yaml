@@ -14,11 +14,16 @@ services:
                 music https://www.youtube.com/watch?v=HJpDlGvY6YE
                 musicvideo https://www.youtube.com/watch?v=HJpDlGvY6YE
                 news https://www.youtube.com/watch?v=HJpDlGvY6YE
+                podcast https://www.youtube.com/watch?v=HJpDlGvY6YE
                 series https://www.youtube.com/watch?v=HJpDlGvY6YE
                 xyz https://www.youtube.com/watch?v=HJpDlGvY6YE
             - POST_EXECUTION_COMMAND=echo 'Here is post execution command.'
             # - DOWNLOADER_CRON=* * * * *
+        read_only: true
         tmpfs:
+            - /media/cron
             - /media/workdir
+            - /run
+            - /tmp:exec
         volumes:
             - "./data-local:/media/downloader"

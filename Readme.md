@@ -17,7 +17,7 @@ It downloads all new files from the given urls at the given cron schedule.
     - The time to run the downloader. The default is `30 20 * * *`
 - `DOWNLOADER_LIST`
     - List of urls to download. One per line. No spaces in url allowed.
-        List is in the format `[[movie|music|musicvideo|series]] URL ((NOTE))`.
+        List is in the format `[[movie|music|musicvideo|podcast|series]] URL ((NOTE))`.
 - `POST_EXECUTION_COMMAND`
     - Command to run when the downloads are finished and new files are downloaded.
 
