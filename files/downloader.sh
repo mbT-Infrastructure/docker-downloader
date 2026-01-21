@@ -86,10 +86,10 @@ E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_
     while true; do
         EXIT_CODE=0
         yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-error --abort-on-unavailable-fragments \
-            --audio-multistream --concurrent-fragments 8 --convert-thumb jpg \
-            --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
+            --audio-multistream --cache-dir /tmp/yt-dlp/cache --concurrent-fragments 8 \
+            --convert-thumb jpg --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
-            --fragment-retries 1000 --max-downloads 1 --retries 100 --retry-sleep 10 \
+            --fragment-retries 1000 --retries 100 --retry-sleep 10 \
             --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL" \
             || EXIT_CODE=$?
         if [[ "$EXIT_CODE" != @(101|0) ]]; then
@@ -101,7 +101,7 @@ E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_
             break
         fi
 
-        echo "Downloaded new file \"$(ls -A "$WORKDIR")\""
+        echo "Downloaded new files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
         NEW_DOWNLOAD=true
         touch --no-create "$WORKDIR"/*
 
@@ -125,10 +125,10 @@ tok.*)\)//gi" \
             rename --filename "s/^/${NOTE} - /" "$WORKDIR"/*
         fi
 
-        echo "Move file \"$(ls -A "$WORKDIR")\""
+        echo "Move files"
         mv --no-clobber "$WORKDIR"/* "${OUTPUT_DIR}/${TYPE}"
-        if [[ "$(ls -A "$WORKDIR")" ]]; then
-            echo "Failed to move file"
+        if [[ -n "$(ls --almost-all "$WORKDIR")" ]]; then
+            echo "Failed to move files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
             mv "$WORKDIR"/* "$FAIL_DIR"
         fi
     done
