@@ -51,7 +51,7 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
     YT_DLP_ARGUMENTS=()
     if [[ "$TYPE" == movie ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(title)s (%(release_date>%Y,upload_date>%Y)s)\
+        "%(title)s (%(release_date>%Y,upload_date>%Y)s)\
 %(format_note& - {}|)s [%(language).2s].%(ext)s")
     elif [[ "$TYPE" == music ]]; then
         RUN_FILENAME_SANITIZE=true
@@ -59,22 +59,22 @@ for ITEM in "${DOWNLOADER_ITEMS[@]}"; do
         YT_DLP_ARGUMENTS=("${AUDIO_DEFAULT_ARGUMENTS[@]}" \
         --postprocessor-args "ThumbnailsConvertor+ffmpeg_o:-c:v \
         mjpeg -vf crop=\"'if(gt(ih,iw),iw,ih)':'if(gt(iw,ih),ih,iw)'\"" \
-        --output "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
+        --output "%(creator).80s - %(title)s.%(ext)s")
     elif [[ "$TYPE" == musicvideo ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(creator).80s - %(title)s.%(ext)s")
+        "%(creator).80s - %(title)s.%(ext)s")
         RUN_FILENAME_SANITIZE=true
     elif [[ "$TYPE" == news ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
+        "%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
 %(playlist_title,channel)s - %(title)s \\[%(language).2s\\].%(ext)s")
     elif [[ "$TYPE" == podcast ]]; then
         YT_DLP_ARGUMENTS=("${AUDIO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
+        "%(release_date>%Y.%m.%d,upload_date>%Y.%m.%d)s \
 %(series,playlist_title,channel)s%(title& - {}|)s [%(language).2s].%(ext)s")
     elif [[ "$TYPE" == series ]]; then
         YT_DLP_ARGUMENTS=("${VIDEO_DEFAULT_ARGUMENTS[@]}" --output \
-        "${WORKDIR}/%(series,playlist_title,channel)s S%(season_number|XX)02d\
+        "%(series,playlist_title,channel)s S%(season_number|XX)02d\
 E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_date>%Y)s)\
 %(format_note& - {}|)s [%(language).2s].%(ext)s")
     else
@@ -89,13 +89,14 @@ E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_
             --audio-multistream --cache-dir /tmp/yt-dlp/cache --concurrent-fragments 8 \
             --convert-thumb jpg --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
             --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
-            --fragment-retries 1000 --retries 100 --retry-sleep 10 \
-            --sub-langs all,-live_chat --trim-filenames "124" --quiet "$URL" \
+            --fragment-retries 1000 --paths "home:${WORKDIR}" --paths "temp:${WORKDIR}/yt-dlp" \
+            --retries 100 --retry-sleep 10 --sub-langs all,-live_chat --trim-filenames "124" \
+            --quiet "$URL" \
             || EXIT_CODE=$?
         if [[ "$EXIT_CODE" != @(101|0) ]]; then
             echo "Download failed with exit code ${EXIT_CODE}."
-            rm -f "$WORKDIR"/*
         fi
+        rm --force --recursive "${WORKDIR}/yt-dlp"
         if [[ ! "$(ls -A "$WORKDIR")" ]]; then
             echo "No new download"
             break
