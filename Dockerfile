@@ -1,6 +1,6 @@
 FROM madebytimo/cron
 
-RUN install-autonomous.sh install Basics FFmpeg Fileorganizer Java Scripts YtDlp \
+RUN install-autonomous.sh install Basics FFmpeg Fileorganizer Java NodeJs Scripts YtDlp \
     && rm -rf /var/lib/apt/lists/*
 
 COPY files/downloader.sh files/entrypoint.sh /usr/local/bin/

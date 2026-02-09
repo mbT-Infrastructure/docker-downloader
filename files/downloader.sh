@@ -83,56 +83,55 @@ E%(episode_number,playlist_index|XX)02d%(title& {}|)s (%(release_date>%Y,upload_
     fi
 
     echo "Download ${TYPE} from \"${URL}\""
-    while true; do
-        EXIT_CODE=0
-        yt-dlp "${YT_DLP_ARGUMENTS[@]}" --abort-on-error --abort-on-unavailable-fragments \
-            --audio-multistream --cache-dir /tmp/yt-dlp/cache --concurrent-fragments 8 \
-            --convert-thumb jpg --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
-            --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
-            --fragment-retries 1000 --paths "home:${WORKDIR}" --paths "temp:${WORKDIR}/yt-dlp" \
-            --retries 100 --retry-sleep 10 --sub-langs all,-live_chat --trim-filenames "124" \
-            --quiet "$URL" \
-            || EXIT_CODE=$?
-        if [[ "$EXIT_CODE" != @(101|0) ]]; then
-            echo "Download failed with exit code ${EXIT_CODE}."
-        fi
-        rm --force --recursive "${WORKDIR}/yt-dlp"
-        if [[ ! "$(ls -A "$WORKDIR")" ]]; then
-            echo "No new download"
-            break
-        fi
+    EXIT_CODE=0
+    yt-dlp "${YT_DLP_ARGUMENTS[@]}" --no-abort-on-error --abort-on-unavailable-fragments \
+        --audio-multistream --cache-dir /tmp/yt-dlp/cache --concurrent-fragments 8 \
+        --convert-thumb jpg --download-archive "${CONFIG_DIR}/${TYPE}/downloaded.txt" \
+        --embed-chapters --embed-metadata --embed-subs --embed-thumbnail \
+        --fragment-retries 1000 --js-runtimes node \
+        --paths "home:${WORKDIR}" --paths "temp:${WORKDIR}/yt-dlp" \
+        --retries 100 --retry-sleep 10 --sub-langs all,-live_chat --trim-filenames "124" \
+        --quiet "$URL" \
+        || EXIT_CODE=$?
+    if [[ "$EXIT_CODE" != @(101|0) ]]; then
+        echo "Download failed with exit code ${EXIT_CODE}."
+    fi
+    rm --force --recursive "${WORKDIR}/yt-dlp"
+    if [[ ! "$(ls -A "$WORKDIR")" ]]; then
+        echo "No new download"
+        continue
+    fi
 
-        echo "Downloaded new files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
-        NEW_DOWNLOAD=true
-        touch --no-create "$WORKDIR"/*
+    echo "Downloaded new files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
+    NEW_DOWNLOAD=true
+    touch --no-create "$WORKDIR"/*
 
-        normalize-filename.sh "$WORKDIR"/*
+    normalize-filename.sh "$WORKDIR"/*
 
-        if [[ "$RUN_FILENAME_SANITIZE" == true ]]; then
-        rename --filename \
-            -E 's/^.* - (.*) - /$1 - /' \
-            -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
-            -E 's/\[(.*)\]/\($1\)/g' \
-            -E "s/ *\(((Official|Offizielles) )?((Music|Musik) ?)?(Audio|Lyrics|Video|Videoclip|Tik\
+    if [[ "$RUN_FILENAME_SANITIZE" == true ]]; then
+    rename --filename \
+        -E 's/^.* - (.*) - /$1 - /' \
+        -E 's/^((.*, ){3,}.*), .*( - )/$1$3/' \
+        -E 's/\[(.*)\]/\($1\)/g' \
+        -E "s/ *\(((Official|Offizielles) )?((Music|Musik) ?)?(Audio|Lyrics|Video|Videoclip|Tik\
 tok.*)\)//gi" \
-            "$WORKDIR"/*
-        fi
+        "$WORKDIR"/*
+    fi
 
-        if [[ "$RUN_FILEORGANIZER" == true ]]; then
-            fileorganizer tagger FilenameToTag "$WORKDIR"
-        fi
+    if [[ "$RUN_FILEORGANIZER" == true ]]; then
+        fileorganizer tagger FilenameToTag "$WORKDIR"
+    fi
 
-        if [[ -n "$NOTE" ]]; then
-            rename --filename "s/^/${NOTE} - /" "$WORKDIR"/*
-        fi
+    if [[ -n "$NOTE" ]]; then
+        rename --filename "s/^/${NOTE} - /" "$WORKDIR"/*
+    fi
 
-        echo "Move files"
-        mv --no-clobber "$WORKDIR"/* "${OUTPUT_DIR}/${TYPE}"
-        if [[ -n "$(ls --almost-all "$WORKDIR")" ]]; then
-            echo "Failed to move files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
-            mv "$WORKDIR"/* "$FAIL_DIR"
-        fi
-    done
+    echo "Move files"
+    mv --no-clobber "$WORKDIR"/* "${OUTPUT_DIR}/${TYPE}"
+    if [[ -n "$(ls --almost-all "$WORKDIR")" ]]; then
+        echo "Failed to move files $(ls --almost-all --quote-name --width 0 "$WORKDIR")"
+        mv "$WORKDIR"/* "$FAIL_DIR"
+    fi
 done
 
 POST_EXECUTION_COMMAND="$(cat /dev/shm/downloader-post-execution-command)"
